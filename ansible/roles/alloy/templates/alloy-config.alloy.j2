@@ -1,9 +1,9 @@
 local.file_match "auth_logs" {
   path_targets = [
     {
-      "__path__" = "/var/log/auth.log"
-      "job" = "syslog"
-      "host" = "{{ ansible_hostname }}"
+      "__path__" = "/var/log/auth.log",
+      "job"      = "syslog",
+      "host"     = "{{ ansible_hostname }}",
     },
   ]
 }
