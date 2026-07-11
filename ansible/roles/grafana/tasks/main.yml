@@ -1,0 +1,69 @@
+---
+- name: Install required packages
+  apt:
+    name:
+      - apt-transport-https
+      - software-properties-common
+      - wget
+      - gpg
+    state: present
+    update_cache: yes
+
+- name: Create keyrings directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Download Grafana GPG key
+  get_url:
+    url: https://apt.grafana.com/gpg.key
+    dest: /tmp/grafana.key
+    mode: "0644"
+
+- name: Convert Grafana GPG key
+  command:
+    cmd: gpg --dearmor -o /etc/apt/keyrings/grafana.gpg /tmp/grafana.key
+    creates: /etc/apt/keyrings/grafana.gpg
+
+- name: Add Grafana repository
+  apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main"
+    filename: grafana
+    state: present
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install Grafana
+  apt:
+    name: grafana
+    state: present
+
+- name: Enable Grafana
+  systemd:
+    name: grafana-server
+    enabled: yes
+
+- name: Start Grafana
+  systemd:
+    name: grafana-server
+    state: started
+
+- name: Create Grafana datasource provisioning directory
+  file:
+    path: /etc/grafana/provisioning/datasources
+    state: directory
+    owner: grafana
+    group: grafana
+    mode: "0755"
+
+- name: Install Prometheus datasource
+  template:
+    src: datasource.yml.j2
+    dest: /etc/grafana/provisioning/datasources/prometheus.yml
+    owner: grafana
+    group: grafana
+    mode: "0644"
+  notify: Restart Grafana

@@ -1,0 +1,101 @@
+---
+- name: Create Prometheus group
+  group:
+    name: "{{ prometheus_group }}"
+    system: yes
+
+- name: Create Prometheus user
+  user:
+    name: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    shell: /usr/sbin/nologin
+    system: yes
+    create_home: no
+
+- name: Create configuration directory
+  file:
+    path: "{{ prometheus_config_dir }}"
+    state: directory
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    mode: "0755"
+
+- name: Create data directory
+  file:
+    path: "{{ prometheus_data_dir }}"
+    state: directory
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    mode: "0755"
+
+- name: Download Prometheus
+  get_url:
+    url: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+    dest: "/tmp/prometheus.tar.gz"
+    mode: "0644"
+
+- name: Extract Prometheus
+  unarchive:
+    src: "/tmp/prometheus.tar.gz"
+    dest: "/tmp"
+    remote_src: yes
+
+- name: Install Prometheus binary
+  copy:
+    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/prometheus"
+    dest: "{{ prometheus_install_dir }}/prometheus"
+    remote_src: yes
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install promtool
+  copy:
+    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/promtool"
+    dest: "{{ prometheus_install_dir }}/promtool"
+    remote_src: yes
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Copy consoles directory
+  copy:
+    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/consoles"
+    dest: "{{ prometheus_config_dir }}"
+    remote_src: yes
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+
+- name: Copy console libraries
+  copy:
+    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/console_libraries"
+    dest: "{{ prometheus_config_dir }}"
+    remote_src: yes
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+
+- name: Install Prometheus configuration
+  template:
+    src: prometheus.yml.j2
+    dest: "{{ prometheus_config_dir }}/prometheus.yml"
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    mode: "0644"
+  notify: Restart Prometheus
+
+- name: Install systemd service
+  template:
+    src: prometheus.service.j2
+    dest: /etc/systemd/system/prometheus.service
+    mode: "0644"
+  notify: Restart Prometheus
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: Enable Prometheus
+  systemd:
+    name: prometheus
+    enabled: yes
+    state: started
