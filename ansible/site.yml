@@ -9,5 +9,5 @@
     - grafana
     - node_exporter
     - uptime_kuma
-    - promtail
+    - alloy
     - loki

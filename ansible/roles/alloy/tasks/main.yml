@@ -1,0 +1,86 @@
+---
+- name: Install prerequisites
+  apt:
+    name:
+      - curl
+      - gpg
+      - unzip
+    state: present
+    update_cache: yes
+
+
+- name: Download Grafana Alloy package
+  get_url:
+    url: https://github.com/grafana/alloy/releases/latest/download/alloy-linux-amd64.zip
+    dest: /tmp/alloy.zip
+
+
+- name: Extract Alloy
+  unarchive:
+    src: /tmp/alloy.zip
+    dest: /tmp
+    remote_src: yes
+
+
+- name: Create Alloy user
+  user:
+    name: "{{ alloy_user }}"
+    system: yes
+    shell: /usr/sbin/nologin
+
+
+- name: Create Alloy config directory
+  file:
+    path: "{{ alloy_config_dir }}"
+    state: directory
+    owner: "{{ alloy_user }}"
+    group: "{{ alloy_group }}"
+
+
+- name: Create Alloy data directory
+  file:
+    path: "{{ alloy_data_dir }}"
+    state: directory
+    owner: "{{ alloy_user }}"
+    group: "{{ alloy_group }}"
+
+
+- name: Install Alloy binary
+  copy:
+    src: /tmp/alloy-linux-amd64
+    dest: /usr/local/bin/alloy
+    remote_src: yes
+    mode: "0755"
+
+- name: Install Alloy configuration
+  template:
+    src: alloy-config.alloy.j2
+    dest: "{{ alloy_config_dir }}/config.alloy"
+    owner: "{{ alloy_user }}"
+    group: "{{ alloy_group }}"
+    mode: "0644"
+  notify: Restart Alloy
+
+
+- name: Install Alloy service
+  template:
+    src: alloy.service.j2
+    dest: /etc/systemd/system/alloy.service
+
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+
+
+- name: Enable Alloy
+  systemd:
+    name: alloy
+    enabled: yes
+    state: started
+
+- name: Add Alloy to adm group
+  user:
+    name: alloy
+    groups: adm
+    append: yes

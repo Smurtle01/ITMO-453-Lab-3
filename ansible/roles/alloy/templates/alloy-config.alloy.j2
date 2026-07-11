@@ -1,0 +1,21 @@
+loki.write "local" {
+  endpoint {
+    url = "{{ loki_url }}"
+  }
+}
+
+
+loki.source.file "auth_logs" {
+
+  targets = [
+    {
+      __path__ = "/var/log/auth.log",
+      job = "syslog",
+      host = "{{ inventory_hostname }}"
+    }
+  ]
+
+  forward_to = [
+    loki.write.local.receiver
+  ]
+}

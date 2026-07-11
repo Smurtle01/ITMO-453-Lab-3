@@ -1,0 +1,18 @@
+[Unit]
+Description=Grafana Alloy
+After=network.target
+
+
+[Service]
+
+User={{ alloy_user }}
+
+ExecStart=/usr/local/bin/alloy run \
+{{ alloy_config_dir }}/config.alloy
+
+Restart=always
+
+
+[Install]
+
+WantedBy=multi-user.target
