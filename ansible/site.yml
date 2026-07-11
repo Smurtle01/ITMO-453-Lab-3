@@ -8,3 +8,4 @@
     - prometheus
     - grafana
     - node_exporter
+    - uptime_kuma

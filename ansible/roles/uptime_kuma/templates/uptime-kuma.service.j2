@@ -1,0 +1,13 @@
+[Unit]
+Description=Uptime Kuma
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/uptime-kuma
+ExecStart=/usr/bin/node server/server.js
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

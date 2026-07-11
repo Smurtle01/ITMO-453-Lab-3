@@ -1,0 +1,37 @@
+---
+- name: Install required packages
+  apt:
+    name:
+      - git
+      - curl
+      - nodejs
+      - npm
+    state: present
+    update_cache: yes
+
+- name: Clone Uptime Kuma
+  git:
+    repo: https://github.com/louislam/uptime-kuma.git
+    dest: /opt/uptime-kuma
+    version: master
+
+- name: Install Node dependencies
+  command:
+    cmd: npm run setup
+    chdir: /opt/uptime-kuma
+
+- name: Install systemd service
+  template:
+    src: uptime-kuma.service.j2
+    dest: /etc/systemd/system/uptime-kuma.service
+  notify: Restart Uptime Kuma
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start Uptime Kuma
+  systemd:
+    name: uptime-kuma
+    enabled: yes
+    state: started
