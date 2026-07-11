@@ -7,3 +7,4 @@
     - webserver
     - prometheus
     - grafana
+    - node_exporter
