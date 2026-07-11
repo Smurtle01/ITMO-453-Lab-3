@@ -9,6 +9,22 @@
     state: present
     update_cache: yes
 
+- name: Create Uptime Kuma directory
+  file:
+    path: /opt/uptime-kuma
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create Uptime Kuma data directory
+  file:
+    path: /opt/uptime-kuma/data
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
 - name: Clone Uptime Kuma
   git:
     repo: https://github.com/louislam/uptime-kuma.git
