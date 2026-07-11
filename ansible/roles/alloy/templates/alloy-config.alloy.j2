@@ -1,24 +1,25 @@
 local.file_match "auth_logs" {
   path_targets = [
     {
-      "__path__" = "/var/log/auth.log",
-      "job"      = "syslog",
-      "host"     = "{{ ansible_hostname }}",
+      "__path__" = "/var/log/auth.log"
+      "job" = "syslog"
+      "host" = "{{ ansible_hostname }}"
     },
   ]
 }
 
 
 loki.source.file "auth_logs" {
-  targets    = local.file_match.auth_logs.targets,
+  targets = local.file_match.auth_logs.targets
+
   forward_to = [
     loki.write.local.receiver,
-  ],
+  ]
 }
 
 
 loki.write "local" {
   endpoint {
-    url = "http://localhost:3100/loki/api/v1/push",
+    url = "http://localhost:3100/loki/api/v1/push"
   }
 }
