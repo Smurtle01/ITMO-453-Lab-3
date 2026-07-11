@@ -8,12 +8,10 @@
     state: present
     update_cache: yes
 
-
 - name: Download Grafana Alloy package
   get_url:
     url: https://github.com/grafana/alloy/releases/latest/download/alloy-linux-amd64.zip
     dest: /tmp/alloy.zip
-
 
 - name: Extract Alloy
   unarchive:
@@ -21,13 +19,17 @@
     dest: /tmp
     remote_src: yes
 
-
 - name: Create Alloy user
   user:
     name: "{{ alloy_user }}"
     system: yes
     shell: /usr/sbin/nologin
 
+- name: Add Alloy user to adm group
+  user:
+    name: "{{ alloy_user }}"
+    groups: adm
+    append: yes
 
 - name: Create Alloy config directory
   file:
@@ -36,14 +38,12 @@
     owner: "{{ alloy_user }}"
     group: "{{ alloy_group }}"
 
-
 - name: Create Alloy data directory
   file:
     path: "{{ alloy_data_dir }}"
     state: directory
     owner: "{{ alloy_user }}"
     group: "{{ alloy_group }}"
-
 
 - name: Install Alloy binary
   copy:
@@ -60,7 +60,6 @@
     group: "{{ alloy_group }}"
     mode: "0644"
   notify: Restart Alloy
-
 
 - name: Install Alloy service
   template:

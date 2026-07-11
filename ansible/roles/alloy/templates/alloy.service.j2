@@ -6,8 +6,10 @@ After=network.target
 [Service]
 
 User={{ alloy_user }}
+Group={{ alloy_group }}
 
-ExecStart=/usr/local/bin/alloy run \
+ExecStart={{ alloy_binary_path }} run \
+--storage.path={{ alloy_data_dir }} \
 {{ alloy_config_dir }}/config.alloy
 
 Restart=always
