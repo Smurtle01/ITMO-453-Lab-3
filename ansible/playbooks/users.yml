@@ -1,0 +1,13 @@
+---
+- name: User Management
+  hosts: webservers
+  become: true
+
+  tasks:
+
+    - name: Create automation user
+      user:
+        name: automationuser
+        groups: sudo
+        shell: /bin/bash
+        state: present
