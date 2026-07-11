@@ -58,22 +58,6 @@
     group: root
     mode: "0755"
 
-- name: Copy consoles directory
-  copy:
-    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/consoles"
-    dest: "{{ prometheus_config_dir }}"
-    remote_src: yes
-    owner: "{{ prometheus_user }}"
-    group: "{{ prometheus_group }}"
-
-- name: Copy console libraries
-  copy:
-    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/console_libraries"
-    dest: "{{ prometheus_config_dir }}"
-    remote_src: yes
-    owner: "{{ prometheus_user }}"
-    group: "{{ prometheus_group }}"
-
 - name: Install Prometheus configuration
   template:
     src: prometheus.yml.j2
