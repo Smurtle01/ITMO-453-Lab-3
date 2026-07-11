@@ -59,10 +59,10 @@
     group: grafana
     mode: "0755"
 
-- name: Install Prometheus datasource
+- name: Install Grafana datasources
   template:
     src: datasource.yml.j2
-    dest: /etc/grafana/provisioning/datasources/prometheus.yml
+    dest: /etc/grafana/provisioning/datasources/datasources.yml
     owner: grafana
     group: grafana
     mode: "0644"
