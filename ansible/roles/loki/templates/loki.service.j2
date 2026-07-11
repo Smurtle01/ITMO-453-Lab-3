@@ -1,0 +1,17 @@
+[Unit]
+Description=Loki Log Aggregation Service
+After=network.target
+
+
+[Service]
+User={{ loki_user }}
+Group={{ loki_group }}
+
+ExecStart={{ loki_binary_path }} \
+-config.file={{ loki_config_dir }}/loki-config.yml
+
+Restart=always
+
+
+[Install]
+WantedBy=multi-user.target

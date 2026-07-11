@@ -1,0 +1,10 @@
+---
+promtail_version: "3.7.3"
+
+promtail_user: promtail
+promtail_group: promtail
+
+promtail_binary_path: /usr/local/bin/promtail
+promtail_config_dir: /etc/promtail
+
+loki_url: http://localhost:3100/loki/api/v1/push

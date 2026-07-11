@@ -1,0 +1,9 @@
+---
+loki_version: "3.7.3"
+
+loki_user: loki
+loki_group: loki
+
+loki_binary_path: /usr/local/bin/loki
+loki_config_dir: /etc/loki
+loki_data_dir: /var/lib/loki
